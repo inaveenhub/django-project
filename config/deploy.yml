@@ -1,0 +1,56 @@
+service: app-name
+
+image: docker-hub-username/app-name
+
+ssh:
+  user: ubuntu
+
+env:
+  clear:
+    ALLOWED_HOSTS: example.com
+  secret:
+    - DOCKER_REGISTRY_TOKEN
+    - POSTGRES_PASSWORD
+    - SECRET_KEY
+    - DATABASE_URL
+
+# https://kamal-deploy.org/docs/configuration#using-different-roles-for-servers
+servers:
+  web:
+    hosts:
+      - <-------IP_ADDRESS--------->
+    options:
+      expose: "8000"
+
+# See https://kamal-deploy.org/docs/configuration/builders/ for config options
+builder:
+  arch: amd64
+
+# See https://kamal-deploy.org/docs/configuration/docker-registry/ for config options
+registry:
+  username: docker-hub-username
+  password:
+    - DOCKER_REGISTRY_TOKEN
+
+accessories:
+  postgres:
+    image: postgres:16.4
+    host: <-------IP_ADDRESS--------->
+    directories:
+      - data:/var/lib/postgresql/data
+    env:
+      clear:
+        POSTGRES_USER: postgres
+        POSTGRES_DB: db-name
+      secret:
+        - POSTGRES_PASSWORD
+
+# See https://kamal-deploy.org/docs/configuration/proxy/ for config options
+proxy:
+  ssl: true
+  host: example.com
+  app_port: 8000
+  healthcheck:
+    path: /kamal/up/
+    interval: 2
+    timeout: 2
