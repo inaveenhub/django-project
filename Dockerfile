@@ -2,7 +2,7 @@
 # See https://docs.docker.com/build/guide/multi-stage/
 
 # Stage 1: Build the python dependencies
-FROM python:3.12.7-slim-bookworm as build-python
+FROM python:3.12.7-slim-bookworm AS build-python
 
 RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
     --mount=target=/var/cache/apt,type=cache,sharing=locked \
@@ -28,8 +28,9 @@ COPY ./ /home/app/app-name
 # This copies the python dependencies from the first stage
 # and the front end files from the second stage.
 FROM python:3.12.7-slim-bookworm
-ENV PYTHONUNBUFFERED 1
-ENV DEBUG 0
+
+ENV PYTHONUNBUFFERED=1
+ENV DEBUG=0
 
 RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
     --mount=target=/var/cache/apt,type=cache,sharing=locked \
